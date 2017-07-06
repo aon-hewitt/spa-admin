@@ -1706,7 +1706,7 @@ function logout() {
     Gitana.deleteCookie("username", "/");
 
     platform.logout();
-    open("alpaca2.html", "_self");
+    open("admin.html", "_self");
 }
 
 
