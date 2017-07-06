@@ -140,8 +140,9 @@
                     <br />
                     <label for="myFileUpload5">
                         What would you like to view?? 
-                        <a href="#" onclick="getAttachments('image')">Images</a> or <a href="#" onclick="getAttachments('doc')"> Documents </a>
+                        <a href="#" onclick="getAttachments('image')">Images</a> or <a href="#" onclick="getDocuments('doc')"> Documents </a>
                         <table id="imgtbl"  style="display: none;"></table>
+                         <table id="doctbl"  style="display: none;"></table>
                     </label>
                     <br />
                  <textarea id="holdtext" style="display: none"></textarea>
@@ -155,8 +156,7 @@
                     <div>
                         <br />
                         <label for="myFileUpload5">
-                            You may use this form to upload pdf (Adobe Acrobat) , xls/xlsx (Microsoft Excel) or ppt/pptx (Microsoft Powerpoint)
-                            resources to your document library. Select the file by clicking on the 'Choose File'
+                            You may use this form to upload resources to your document library. Select the file by clicking on the 'Choose File'
                             Button. Give the file a user friendly name. It should be lowercase with no spaces.
                             Then click 'Submit' to upload your file to the library.
                         </label>
@@ -196,7 +196,7 @@
     <footer class="container-fluid text-center landingfooter">
       <p>Aon</p>
     </footer>
-    <div id="dialog-modal" title="Image replace dialog"><img src="../images/pic03.jpg" id="dimg" /></div>
+    <div id="dialog-modal" title="Image replace dialog"><img src="" id="dimg" /></div>
 
     <script src="js/alpaca2.js"></script>
 

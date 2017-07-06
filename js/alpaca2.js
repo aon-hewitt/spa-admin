@@ -493,12 +493,33 @@ function getPageDetails(nPageData){
     var img_u = {
         "ls": ['images/pic01.jpg']
     };
-
+     
     /*var img_u = {
         "ls":  f
     };*/
 
-   
+     var x  = document.cookie;
+     var cookieGroup =[];
+
+          var doc_cookie = document.cookie.split(";");
+          
+          for(var i = 0; i < doc_cookie.length ; i++){
+
+            var name= doc_cookie[i].split("=")[0].trim();
+            if(name=='image_data')
+                 var language_1= doc_cookie[i].split("=")[1];
+            if(name=='selected_image')
+                 var location_1= doc_cookie[i].split("=")[1];
+              
+               
+          }
+ 
+    var actual_img = JSON.parse(language_1);
+    var img_data_capture = [];
+    for(i=0;i<actual_img.length;i++){
+        img_data_capture[i]=actual_img[i]['ar']
+    }
+    console.log(img_data_capture)
 
     $("#pageDisp1").alpaca({
        "view": "bootstrap-edit",
@@ -537,7 +558,7 @@ function getPageDetails(nPageData){
                     "img_ux":{
                         "title": "Existing images",
                         "type": "select",
-                         "enum": img_u['ls']
+                         "enum":img_data_capture
                     },
                       
                     "footer": {
@@ -870,15 +891,26 @@ function showFormPage() {
 
 
     $("#myform").html(""); 
-    var x  = document.cookie;
-    var img_newData = x.split('=')[1];
-    var actual_img = JSON.parse(img_newData);
+    
+  var doc_cookie = document.cookie.split(";");
+  
+  for(var i = 0; i < doc_cookie.length ; i++){
+
+    var name= doc_cookie[i].split("=")[0].trim();
+    if(name=='image_data')
+         var language_1= doc_cookie[i].split("=")[1];
+    
+  }
+
+    var actual_img = JSON.parse(language_1);
+     
     var img_data_capture = [];
     for(i=0;i<actual_img.length;i++){
         img_data_capture[i]=actual_img[i]['ar']
     }
  
- 
+    console.log(img_data_capture);
+
     $("#myform").alpaca({
             "view": "bootstrap-edit",
             "data": node,
@@ -1225,63 +1257,8 @@ function showFormPage() {
                         
                         var x=  this.schema.data.target.value ;
                         $('#dialog-modal').dialog('open');
-
-                        username = $("#txtUsername").val();
-                        password = $("#txtPassword").val();
-                        var config = {
-                            "clientKey": "26f9385c-5993-4fdb-b18b-a537e16cc721",
-                            "clientSecret": "Bi+EneT8H7oVSdFM3/zXilvt+FPDQrZC3RsWQb31OS4psIp/mbbfdnkHFN2GLDl4DFbJt52iQFQoohmdO0cC6TT6qQ/pqWKRM6IqBnemDSo=",
-                            "username":username,
-                            "password":password,
-                            "baseURL": "https://api.cloudcms.com",
-                            "application": "ae4e45352206df5ebff3"
-                        };
-
-                        Gitana.connect(config, function(err) {
-                            if (err) {
-                                
-                            }
-                        }).then(function() {
-                            platform = this; 
-                            this.readRepository(repositoryId).then(function() {
-                                repository = this;
-                     
-                                this.readBranch(branchId).then(function() {
-                                    branch = this;         
-                     
-                                    
-                                   var ContainerId = 'be1d4801be57fd2423db';
-                                      node = this.readNode(ContainerId).then(function () {                 
-                                        
-                                        var authorizationHeader = platform.getDriver().getHttpHeaders()["Authorization"];
-                                        
-                                        ct="https://api.cloudcms.com/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/be1d4801be57fd2423db/attachments" ;
-                                        $.ajax({
-                                            type: "GET",
-                                            url: ct, 
-                                            headers: {
-                                                authorization: authorizationHeader
-                                            },
-                                            success: function (response) {
-                                                $("#dimg").attr('src',x);  
-                                                var c = $('.container').find("[data-alpaca-container-item-name='bodyImage']").children();
-                                                var d= c[1];
-                                                
-                                                var xe = d.children[1];
-                                                var id= xe.id;
-                                                
-                                               $("#"+id).val(x);
-
-                                            }
-                                        });
-                                    });
-                                  });
-                            });
-                        });
-
-
-                         
-
+                         $("#dimg").attr('src',x);  
+                         document.cookie="selected_image="+x; 
                         //this.refresh();
                     });
 
@@ -1307,6 +1284,7 @@ function clearTimer() {
 //This is form upload scripting here--------------------------------------------
 function getAttachments(type){
      $("#imgtbl").css('display','none');
+     $("#doctbl").css('display','none');
     //"username": "0231d383-f2ab-4f22-99a5-31b0a3d5cd93",        
     //"password": "ecCD8Nwvwq9DsfCvzPA8IWhGgWHibtrBdJgd8i9602Q0q7xJMN21gbSEqUUYaOqHQRZ75jzg/Tt4BNPajKOdIx18a26AXP8RQonmjLmvsWQ=",
     username = $("#txtUsername").val();
@@ -1363,7 +1341,7 @@ function getAttachments(type){
                                         newData.push(data_arr); 
                                         count++; 
                                     }    
-                                }else if(type=='doc'){
+                                }/*else if(type=='doc'){
                                     var extn = x['filename'].substr(x['filename'].indexOf('.')+1);
                                      if((extn !== 'jpg')) {
                                         data_arr ['pic'] = count;
@@ -1372,7 +1350,7 @@ function getAttachments(type){
                                         newData.push(data_arr); 
                                         count++; 
                                     }
-                                }
+                                }*/
                             }                             
                             if(count > 0){                              
                                   $("#imgtbl").alpaca({
@@ -1505,7 +1483,191 @@ function getAttachments(type){
 
 }
 
+function getDocuments(type){
+     $("#doctbl").css('display','none');
+     $("#imgtbl").css('display','none');
+    //"username": "0231d383-f2ab-4f22-99a5-31b0a3d5cd93",        
+    //"password": "ecCD8Nwvwq9DsfCvzPA8IWhGgWHibtrBdJgd8i9602Q0q7xJMN21gbSEqUUYaOqHQRZ75jzg/Tt4BNPajKOdIx18a26AXP8RQonmjLmvsWQ=",
+    username = $("#txtUsername").val();
+    password = $("#txtPassword").val();
+    var config = {
+        "clientKey": "26f9385c-5993-4fdb-b18b-a537e16cc721",
+        "clientSecret": "Bi+EneT8H7oVSdFM3/zXilvt+FPDQrZC3RsWQb31OS4psIp/mbbfdnkHFN2GLDl4DFbJt52iQFQoohmdO0cC6TT6qQ/pqWKRM6IqBnemDSo=",
+        "username":username,
+        "password":password,
+        "baseURL": "https://api.cloudcms.com",
+        "application": "ae4e45352206df5ebff3"
+    };
 
+    Gitana.connect(config, function(err) {
+        if (err) {
+            
+        }
+    }).then(function() {
+        platform = this; 
+        this.readRepository(repositoryId).then(function() {
+            repository = this;
+ 
+            this.readBranch(branchId).then(function() {
+                branch = this;         
+ 
+                
+               var ContainerId = 'be1d4801be57fd2423db';
+                  node = this.readNode(ContainerId).then(function () {                 
+                    
+                    var authorizationHeader = platform.getDriver().getHttpHeaders()["Authorization"];
+                    
+                    ct="https://api.cloudcms.com/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/be1d4801be57fd2423db/attachments" ;
+                    $.ajax({
+                        type: "GET",
+                        url: ct, 
+                        headers: {
+                            authorization: authorizationHeader
+                        },
+                        success: function (response) {
+                            $("#doctbl").css('display','block');
+                            var count=0; 
+                            var newData= new Array(); 
+
+                            for ( var i=0; i < response['rows'].length; i++){
+                                    var data_arr={};
+
+                                x= response['rows'][i];  
+                                console.log(x)                             
+                                  if(type=='doc'){
+                                    var ctnType= x['contentType'];
+                                    //console.log(ctnType.indexOf('image') == -1); 
+                                    var extn = x['filename'].substr(x['filename'].indexOf('.')+1);
+                                     if((ctnType.indexOf('image') == -1)) {
+                                        data_arr ['doc'] = x['filename'];
+                                        data_arr ['ar'] = ct + '/' + x['attachmentId']
+                                        data_arr ['cpy'] = ct + '/' + x['filename'] 
+                                        newData.push(data_arr); 
+                                        count++; 
+                                    }
+                                } 
+                            }                             
+                            if(count > 0){                              
+                                  $("#doctbl").alpaca({
+                                        "data": JSON.stringify(newData),
+                                         "schema": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "doc": {
+                                                        "type": "string",
+                                                        "title": "Document"
+                                                    },                                                    
+                                                    "ar": {
+                                                        "type": "string",
+                                                        "title": "Images"
+                                                    }, "cpy": {
+                                                        "type": "string",
+                                                        "title": "Images"
+                                                    }, 
+                                                     "copyUrl": {
+                                                        "type": "boolean",
+                                                        "title": "Copy URL"
+                                                    } ,                                          
+                                                    "delete": {
+                                                        "type": "boolean",
+                                                        "title": "Delete"
+                                                    }
+                                                     
+                                                }
+                                            }
+                                        }, 
+                                        "options": {
+                                               "type": "table",
+                                                "showActionsColumn": false,  
+                                                 "items": {
+                                                     "fields":{
+                                                        "doc":{
+                                                            "type":"text"
+                                                         },  
+                                                         "cpy":{
+                                                            "type":"hidden"
+                                                         },                          
+                                                        "ar": {
+                                                            "type": "hidden"                                 
+                                                            
+                                                        }
+                                                    }  
+                                                },
+        
+                                                "form": {
+                                                    "buttons": {
+                                                          "addRow": {
+                                                            "title": "Upload New Document",
+                                                            "click": function() {
+                                                                 $("#frmeditSubmitForm5").css('display','block');
+                                                            }
+                                                        },
+                                                        "submit": {
+                                                            "click": function() {
+                                                                var value = this.getValue();                        
+                                                                for ( var i=0; i < value.length;i++) {
+                                                                    
+                                                                    if(value[i].copyUrl==true){    
+                                                                      copyReturn =  copyToClipboard(value[i].cpy);
+                                                                      if(copyReturn ){
+                                                                        alert("Click Ctrl+V to see clipboard contents");
+                                                                      }
+                                                                    }  
+                                                                    if(value[i].delete==true){
+                                                                        
+                                                                            ct_del=value[i].ar ;
+                                                                            $.ajax({                                                                       
+                                                                                url: ct_del, 
+                                                                                type: 'delete', 
+                                                                                headers: {
+                                                                                   authorization: authorizationHeader
+                                                                                },
+                                                                                success: function (response) {
+                                                                                    alert('Image has been deleted successfully');
+                                                                                    location.reload();
+                                                                                 
+                                                                                },
+                                                                                error: function(jqXHR, textStatus, errorThrown) { 
+                                                                                      console.log(jqXHR + "---" + textStatus + '//' + errorThrown);
+                                                                                }
+                                                                            }); 
+                                                                       
+                                                                                                   
+                                                                   }
+
+                                                                }   
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                
+                                        },
+                                         "postRender": function() {
+                                            
+                                            var control = $("#imgtbl").alpaca("get");
+                                            control.refresh(function() {
+                                                // behold, i am the callback that is fired once the refresh completes
+                                            });
+                                        }
+                                    });
+                                }
+                             },
+                             error: function(jqXHR, textStatus, errorThrown) { 
+                              console.log(jqXHR + "---" + textStatus + '//' + errorThrown);
+                            }
+                     });
+
+
+
+                });
+            });
+        });      
+
+    });
+
+}
 
 function submitForm() {
     var formData = new FormData($("#frmeditSubmitForm5")[0]);
@@ -1651,8 +1813,24 @@ $(document).ready(function () {
                var nxt=id.substr(id.length-2,2);
                var ext_img = "alpaca" + (parseInt(nxt)+2);
                console.log(ext_img)
-               $("#"+ x.id).val($("#"+ ext_img).val());               
+                          
                $("[data-alpaca-container-item-name='bodyImage']").val('text');
+               cookieGroup =[];
+
+                  var doc_cookie = document.cookie.split(";");
+                  
+                  for(var i = 0; i < doc_cookie.length ; i++){
+
+                    var name= doc_cookie[i].split("=")[0].trim();
+                    if(name=='image_data')
+                         var language_1= doc_cookie[i].split("=")[1];
+                    if(name=='selected_image')
+                         var location_1= doc_cookie[i].split("=")[1];
+                      
+                       
+                  }
+
+                    $("#"+ x.id).val(location_1);  
                 $(this).dialog("close");
              
             },
