@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>SPA</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+      <script src="js/gitana.1.0.241.min.js"></script>
+    <!--<script type="text/javascript" src="_lib/gitana/gitana.min.js"></script>--> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/4.0.5/handlebars.min.js"> </script>
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
+  <script src="//code.cloudcms.com/alpaca/1.5.22/bootstrap/alpaca.min.js"></script>
+  <link  href="//code.cloudcms.com/alpaca/1.5.22/bootstrap/alpaca.min.css" rel="stylesheet" />
+ <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+ 
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+
+    <script src="ckeditorFull/ckeditor.js" type="text/javascript"></script>
+    <style>
+        .alpaca-container-item
+        {
+            background-color: #eeeeee;
+        }
+        
+        .alpaca-field-object
+        {
+            border: 2px solid black;
+        }
+        
+        .alpaca-container-label
+        {
+            background-color: #dddddd;
+        }
+        
+        .alpaca-field-array
+        {
+            background-color: #828282;
+        }
+        
+        #logout
+        {
+            color: Blue;
+        }
+         #cpy_element {
+            display:none;
+        }
+        textarea#lnk,textarea#lnk1 {
+            width: 30em;
+            height: 7em;
+        }
+        /*alpaca image style*/
+        .alpaca-image-display.alpaca-control img {
+            /* height: 260px; */
+            width: 420px;
+            }
+        table#imgtbl .alpaca-image-display.alpaca-control img {
+            height: 60px;
+            width: 60px;
+        }
+    </style>
+ 
+    <!-- clickjacking script-->
+    <style>
+        html
+        {
+            display: none;
+        }
+    </style>
+    <script>
+        if (self == top) {
+            console.log("Clickjacking test passed");
+            document.documentElement.style.display = 'block';
+        } else {
+            console.log("Clickjacking test failed");
+            top.location = self.location;
+        }
+
+    </script>
+</head>
+<body onload='checkCred();'>
+    <div class="container-fluid" style="background-color: #FFF; height: 91px">
+        <div class="container">
+           <h2 style="color:#555f66">AON</h2>
+        </div>
+    </div>
+    <p id="logout" onclick="logout()" style="cursor: pointer">
+        logout</p>
+    <div id="loginContainer">
+    </div>
+
+    <div id='ur'><p></p></div>
+    <div class="container landingpage">
+        <!-- tabbed area -->
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#home">Page</a></li>
+            <li><a data-toggle="tab" href="#menu1">Navigation</a></li>
+            <li><a data-toggle="tab" href="#menu2">Manage File Upload</a></li>
+        </ul>
+        <div class="tab-content">
+            <div id="home" class="tab-pane fade in active">
+                <br/> 
+                
+                  <!--<div id="myDropdown1">
+                </div>-->
+                <table id="pageDisp">
+                   
+                </table>
+                <table id="pageDisp1" style="display: none;">
+                   
+                </table>
+
+                <div id="myform" style="display: block">
+                </div>
+                 <div id="field9" style="display: block">
+                </div>
+            </div>
+            <div id="menu1" class="tab-pane fade">
+               <br/> 
+                <div id="myDropdown">
+              
+                 <table id="drp">
+                   
+                </table>
+                <table id="drp1" style="display: none;">
+                   
+                </table>
+                </div>
+
+                  <div id="myform1" style="display: block">
+                </div>
+
+
+            </div>
+            <div id="menu2" class="tab-pane fade">
+                <!-- -upload content goes here -->
+             
+                <div>
+                    <br />
+                    <label for="myFileUpload5">
+                        What would you like to view?? 
+                        <a href="#" onclick="getAttachments('image')">Images</a> or <a href="#" onclick="getAttachments('doc')"> Documents </a>
+                        <table id="imgtbl"  style="display: none;"></table>
+                    </label>
+                    <br />
+                 <textarea id="holdtext" style="display: none"></textarea>
+            
+                    
+                </div>
+              
+                    
+              
+                 <form action="" method="post" enctype="multipart/form-data" name="frmeditSubmitForm5" id="frmeditSubmitForm5" style="display: none;">
+                    <div>
+                        <br />
+                        <label for="myFileUpload5">
+                            You may use this form to upload pdf (Adobe Acrobat) , xls/xlsx (Microsoft Excel) or ppt/pptx (Microsoft Powerpoint)
+                            resources to your document library. Select the file by clicking on the 'Choose File'
+                            Button. Give the file a user friendly name. It should be lowercase with no spaces.
+                            Then click 'Submit' to upload your file to the library.
+                        </label>
+                        <br />
+                        <input type="file" id="myFileUpload5" accept="application/pdf,application/vnd.ms-excel"
+                            name="myFileUpload5">
+                        <br />
+                        <label>
+                            Give a name to your file (lowercase, no spaces ex: <span style="background-color: Yellow">
+                                my_new_file</span>).
+                      
+                            <input type="text" name="uploadFilename5" id="uploadFilenameEdit5">
+                        
+                        </label>
+                         <p id="p1" style="display:none">
+                                 https://f2472b6e-e1f1-4c52-9eed-f7797ff8e908-hosted.cloudcms.net/static/test.pdf?repository=e083f23fc5141afe5d22&branch=fcf1c3fb882fd40ecf97&node=f2585ff41013540945ab&attachment=<span id="Span1"></span> 
+                             </p>
+                    </div>
+                 
+                        <input id="mySubmitButton" name="mySubmit" type="submit" value="Submit">
+                </form>
+            </div>
+                <input type="hidden" name="_dontcare">
+                <script>
+                    $("#frmeditSubmitForm5").submit(function (event) {
+                        alert('Resource Uploaded');
+                        event.preventDefault(); // Prevent the form from submitting via the browser.
+                        submitForm();
+                    });
+
+                </script>
+                <!-- upload content ends here -->
+            </div>
+       
+    </div>
+    <br>
+    <footer class="container-fluid text-center landingfooter">
+      <p>Aon</p>
+    </footer>
+    <div id="dialog-modal" title="Image replace dialog"><img src="../images/pic03.jpg" id="dimg" /></div>
+
+    <script src="js/alpaca2.js"></script>
+
+    <script src="js/Class.create.js" type="text/javascript"></script>
+    <script src="js/jquery-encoder-0.1.0.js" type="text/javascript"></script>
+    <script src="js/image-picker.js" type="text/javascript"></script>
+    <script src="js/image-picker.min.js" type="text/javascript"></script>
+    <script src="js/jquery-ui.js" type="text/javascript"></script>
+    <script>
+        
+ $(document).ready(function(){
+ 
+ $.ajax({
+  url: "../images/",
+  success: function(data){
+     
+     $(data).find(".png").each(function(){
+        // will loop through 
+        var filename = this.href.replace(window.location.host, '').replace("http:///","");
+       // console.log(filename + '*********');
+
+        var images = $(this).attr("href");
+       // console.log(images + '=============');
+        $('<p></p>').html(images).appendTo('#ur');
+     });
+  }
+});
+var fileExt=".jpg";
+
+  $.ajax({
+                //This will retrieve the contents of the folder if the folder is configured as 'browsable'
+                url: '../images',
+                success: function (data) {
+               //console.log(data)
+                   $("#ur").html('<ul>');
+                   //List all xml file names in the page
+
+                    //var filename = this.href.replace(window.location, "").replace("http:///", "");
+                   //$("#fileNames").append( '<li>'+filename+'</li>');
+
+                    $(data).find("a:contains(.jpg)").each(function () {
+
+                        $("#ur").append( '<li>'+$(this).text()+'</li>');
+                    });
+                    $("#ur").append('</ul>');
+                }
+            });
+
+
+});
+    </script>
+</body>
+</html>
+
