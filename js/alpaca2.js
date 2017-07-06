@@ -222,9 +222,8 @@ function getImages(){
 } 
  
 
-function getNavbarDetails(newData){ 
-  // console.log(JSON.stringify(newData) + '///')
-    /* Edit existing nav item */ 
+function getNavbarDetails(newData){   
+    /* list existing nav item */ 
     $("#drp").alpaca({
         "data": newData,
         "schema": {
@@ -246,7 +245,7 @@ function getNavbarDetails(newData){
                         "title": "Edit"
                     } ,
                     
-                    "Delete": {
+                    "delete": {
                         "type": "boolean",
                         "title": "Delete"
                     } 
@@ -277,23 +276,31 @@ function getNavbarDetails(newData){
                     "submit": {
                         "click": function() {
                             var value = this.getValue();
-                           
-                             for ( var i=0; i < value.length;i++) {
-                               if(value[i].edit==true){                        
-                                    loadNav(value[i].titles);
+                            var cnt=0;
+                            //loop to check if multipages selected
+                            for ( var i=0; i < value.length;i++) {
+                               if(value[i].edit==true){          
+                                    cnt++;
                                }
-                              
-                               if(value[i].Delete==true){   
-                                    node = branch.readNode(value[i].titles).then(function () {
-                                    
-                                      node.del().then(function () {
-                                         alert("Navbar Item deleted successfully.");
-                                         location.reload();
-                                    });
-                               });
-                               } 
-                              
-                            }   
+                            }
+                            if( cnt == 1 ){
+                                for ( var i=0; i < value.length;i++) {                                
+                                   if(value[i].edit==true){                        
+                                        loadNav(value[i].titles);
+                                   }                              
+                                   if(value[i].delete==true){   
+                                        node = branch.readNode(value[i].titles).then(function () {                                        
+                                            node.del().then(function () {
+                                             alert("Navbar Item deleted successfully.");
+                                             location.reload();
+                                            });
+                                        });
+                                    } 
+                                  
+                                } 
+                            }else{
+                                alert("Please select only one Navbar item to update.")
+                            }  
      
                         }
                     }
@@ -409,7 +416,8 @@ function getNavbarDetails(newData){
 }
 
 function getPageDetails(nPageData){
-    /* Edit existing page */ 
+    
+    /* list existing page */ 
     $("#pageDisp").alpaca({
         "data": nPageData,
         "schema": {
@@ -431,7 +439,7 @@ function getPageDetails(nPageData){
                         "title": "Edit"
                     } ,
                     
-                    "Delete": {
+                    "delete": {
                         "type": "boolean",
                         "title": "Delete"
                     } 
@@ -461,11 +469,29 @@ function getPageDetails(nPageData){
                     "submit": {
                         "click": function() {
                             var value = this.getValue();                        
+                            var cnt=0;
+                            //loop to check if multipages selected
                             for ( var i=0; i < value.length;i++) {
                                if(value[i].edit==true){          
-                                         
-                                    loadPage(value[i].titles);
-                               }                           
+                                    cnt++;
+                               }
+                            }
+                            if( cnt == 1 ){
+                                for ( var i=0; i < value.length;i++) {
+                                   if(value[i].edit==true){     
+                                        loadPage(value[i].titles);
+                                   }
+                                    if(value[i].delete==true){   
+                                        node = branch.readNode(value[i].titles).then(function () {                                        
+                                            node.del().then(function () {
+                                             alert("Page deleted successfully.");
+                                             location.reload();
+                                            });
+                                        });
+                                    } 
+                                }
+                            }else{
+                                alert('Please select only one page to update.');
                             }   
                         }
                     }
@@ -474,53 +500,23 @@ function getPageDetails(nPageData){
         }
     });
     getImages();
-    //get images parsed from cookie
-   /* var value = document.cookie;
-    var parts = value.split( name + "=");
-    var img= parts[1];
-    var img_parsed = JSON.parse(img);
-    var imgData= new Array();
-    for (var i =0 ; i< img_parsed.length ; i++){          
-        var fileldValues = {};
-        fileldValues= img_parsed[i]['cpy'];
-         imgData.push(fileldValues);
-                    
+
+    //get images from cookie 
+    var x  = document.cookie;
+    var doc_cookie = document.cookie.split(";");
+    for(var i = 0; i < doc_cookie.length ; i++){
+        var name= doc_cookie[i].split("=")[0].trim();
+        if(name=='image_data')
+            var language_1= doc_cookie[i].split("=")[1]; 
     }
-
-    var f = (imgData);
-    console.log(f);
-    /*Add new page  */ 
-    var img_u = {
-        "ls": ['images/pic01.jpg']
-    };
-     
-    /*var img_u = {
-        "ls":  f
-    };*/
-
-     var x  = document.cookie;
-     var cookieGroup =[];
-
-          var doc_cookie = document.cookie.split(";");
-          
-          for(var i = 0; i < doc_cookie.length ; i++){
-
-            var name= doc_cookie[i].split("=")[0].trim();
-            if(name=='image_data')
-                 var language_1= doc_cookie[i].split("=")[1];
-            if(name=='selected_image')
-                 var location_1= doc_cookie[i].split("=")[1];
-              
-               
-          }
- 
+    //parsed images
     var actual_img = JSON.parse(language_1);
     var img_data_capture = [];
     for(i=0;i<actual_img.length;i++){
         img_data_capture[i]=actual_img[i]['ar']
     }
-    console.log(img_data_capture)
-
+ 
+    //add new page
     $("#pageDisp1").alpaca({
        "view": "bootstrap-edit",
         "data": node,
@@ -744,12 +740,9 @@ function reShowForm() {
     clearTimer();
     console.log("Timer Cleared");
     setTimer();
-    console.log("Timer Set");
-    //console.log(pageIdToLoad + '==' + branch);
- 
-    node = branch.readNode(pageIdToLoad).then(function() {
- 
-            showForm(); 
+    console.log("Timer Set"); 
+    node = branch.readNode(pageIdToLoad).then(function() { 
+        showForm(); 
     });
 }
 
@@ -891,26 +884,20 @@ function showFormPage() {
 
 
     $("#myform").html(""); 
-    
-  var doc_cookie = document.cookie.split(";");
-  
-  for(var i = 0; i < doc_cookie.length ; i++){
 
-    var name= doc_cookie[i].split("=")[0].trim();
-    if(name=='image_data')
-         var language_1= doc_cookie[i].split("=")[1];
-    
-  }
-
-    var actual_img = JSON.parse(language_1);
-     
+    //parse image data from cookie    
+    var doc_cookie = document.cookie.split(";");
+    for(var i = 0; i < doc_cookie.length ; i++){
+        var name= doc_cookie[i].split("=")[0].trim();
+        if(name=='image_data')
+            var language_1= doc_cookie[i].split("=")[1];        
+    }
+    var actual_img = JSON.parse(language_1);     
     var img_data_capture = [];
     for(i=0;i<actual_img.length;i++){
         img_data_capture[i]=actual_img[i]['ar']
     }
- 
-    console.log(img_data_capture);
-
+  
     $("#myform").alpaca({
             "view": "bootstrap-edit",
             "data": node,
@@ -1285,9 +1272,7 @@ function clearTimer() {
 function getAttachments(type){
      $("#imgtbl").css('display','none');
      $("#doctbl").css('display','none');
-    //"username": "0231d383-f2ab-4f22-99a5-31b0a3d5cd93",        
-    //"password": "ecCD8Nwvwq9DsfCvzPA8IWhGgWHibtrBdJgd8i9602Q0q7xJMN21gbSEqUUYaOqHQRZ75jzg/Tt4BNPajKOdIx18a26AXP8RQonmjLmvsWQ=",
-    username = $("#txtUsername").val();
+     username = $("#txtUsername").val();
     password = $("#txtPassword").val();
     var config = {
         "clientKey": "26f9385c-5993-4fdb-b18b-a537e16cc721",
@@ -1484,10 +1469,8 @@ function getAttachments(type){
 }
 
 function getDocuments(type){
-     $("#doctbl").css('display','none');
-     $("#imgtbl").css('display','none');
-    //"username": "0231d383-f2ab-4f22-99a5-31b0a3d5cd93",        
-    //"password": "ecCD8Nwvwq9DsfCvzPA8IWhGgWHibtrBdJgd8i9602Q0q7xJMN21gbSEqUUYaOqHQRZ75jzg/Tt4BNPajKOdIx18a26AXP8RQonmjLmvsWQ=",
+    $("#doctbl").css('display','none');
+    $("#imgtbl").css('display','none');
     username = $("#txtUsername").val();
     password = $("#txtPassword").val();
     var config = {
@@ -1509,12 +1492,10 @@ function getDocuments(type){
             repository = this;
  
             this.readBranch(branchId).then(function() {
-                branch = this;         
- 
-                
+                branch = this;     
                var ContainerId = 'be1d4801be57fd2423db';
                   node = this.readNode(ContainerId).then(function () {                 
-                    
+                     
                     var authorizationHeader = platform.getDriver().getHttpHeaders()["Authorization"];
                     
                     ct="https://api.cloudcms.com/repositories/" + repositoryId + "/branches/" + branchId + "/nodes/be1d4801be57fd2423db/attachments" ;
@@ -1533,10 +1514,9 @@ function getDocuments(type){
                                     var data_arr={};
 
                                 x= response['rows'][i];  
-                                console.log(x)                             
+                                                             
                                   if(type=='doc'){
-                                    var ctnType= x['contentType'];
-                                    //console.log(ctnType.indexOf('image') == -1); 
+                                    var ctnType= x['contentType'];                                
                                     var extn = x['filename'].substr(x['filename'].indexOf('.')+1);
                                      if((ctnType.indexOf('image') == -1)) {
                                         data_arr ['doc'] = x['filename'];
@@ -1807,12 +1787,12 @@ $(document).ready(function () {
             "Confirm" : function() {
                 var c = $('.container').find("[data-alpaca-container-item-name='bodyImage']").children();
                 var d= c[1];
-                console.log(d);
+               
                var x = d.children[1];
                var id= x.id;
                var nxt=id.substr(id.length-2,2);
                var ext_img = "alpaca" + (parseInt(nxt)+2);
-               console.log(ext_img)
+               
                           
                $("[data-alpaca-container-item-name='bodyImage']").val('text');
                cookieGroup =[];
