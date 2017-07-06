@@ -222,7 +222,8 @@ function getImages(){
 } 
  
 
-function getNavbarDetails(newData){   
+function getNavbarDetails(newData){ 
+  // console.log(JSON.stringify(newData) + '///')
     /* list existing nav item */ 
     $("#drp").alpaca({
         "data": newData,
@@ -846,7 +847,9 @@ function showForm() {
                             node.children = value.children;
                              
                             node.update().then(function() {
-                                alert("Form Submitted")
+                                alert("Form Submitted");
+                                $("#pageDisp1").css('display','none');
+                                $("#myform").html(""); 
                             });
                         }
                     }
@@ -978,6 +981,11 @@ function showFormPage() {
                                 "imageUrl": {
                                     "type": "string",
                                     "title": "imageUrl"
+                                },
+                                "portfolioImg":{
+                                    "title": "Existing images",
+                                    "type": "select",
+                                     "enum": img_data_capture
                                 },
                                 "portfolioItemHeader": {
                                     "type": "string",
@@ -1158,6 +1166,10 @@ function showFormPage() {
                                     "imageUrl":{
                                         "type":"image"
                                     },
+                                     "portfolioImg":{
+                                        "type":"select",
+                                        "optionLabels": img_data_capture
+                                    },
                                     "portfolioItemHeader":{
                                          "type":"text"
                                      },
@@ -1238,16 +1250,27 @@ function showFormPage() {
             "postRender": function(control) {
                 var new_image = control.childrenByPropertyId["img_ux"];
                    
-                    new_image.on('change', function(val) {
-                        //alert("Val = " + val + flavour) ;
-                        this.schema.data = val;                    
-                        
-                        var x=  this.schema.data.target.value ;
-                        $('#dialog-modal').dialog('open');
-                         $("#dimg").attr('src',x);  
-                         document.cookie="selected_image="+x; 
-                        //this.refresh();
-                    });
+                new_image.on('change', function(val) {               
+                    this.schema.data = val;     
+                    var x=  this.schema.data.target.value ;
+                    $('#dialog-modal').dialog('open');
+                     $("#dimg").attr('src',x);  
+                     document.cookie="selected_image="+x; 
+                    
+                });
+           
+                var new_portfolio = control.childrenByPropertyId["portfolioItems"];
+                for(var i=0; i < new_portfolio.children.length ; i++ ){
+                    var new_portfolio_img= new_portfolio.children[i].childrenByPropertyId["portfolioImg"];
+                    new_portfolio_img.on('change', function(val) {               
+                       this.schema.data = val;     
+                       var x=  this.schema.data.target.value ;
+                       $('#dialog-portfolio').dialog('open');
+                       $("#pimg").attr('src',x);  
+                       document.cookie="selected_portfolio_image="+x;                    
+                });     
+                }
+                
 
             } 
     });
@@ -1270,9 +1293,9 @@ function clearTimer() {
  
 //This is form upload scripting here--------------------------------------------
 function getAttachments(type){
-     $("#imgtbl").css('display','none');
-     $("#doctbl").css('display','none');
-     username = $("#txtUsername").val();
+    $("#imgtbl").css('display','none');
+    $("#doctbl").css('display','none');
+    username = $("#txtUsername").val();
     password = $("#txtPassword").val();
     var config = {
         "clientKey": "26f9385c-5993-4fdb-b18b-a537e16cc721",
@@ -1402,7 +1425,7 @@ function getAttachments(type){
                                                                 for ( var i=0; i < value.length;i++) {
                                                                     
                                                                     if(value[i].copyUrl==true){    
-                                                                      copyReturn =  copyToClipboard(value[i].cpy);
+                                                                      copyReturn =  copyToClipboard(value[i].ar);
                                                                       if(copyReturn ){
                                                                         alert("Click Ctrl+V to see clipboard contents");
                                                                       }
@@ -1690,34 +1713,7 @@ function logout() {
 
 
 var fl = document.getElementById('myFileUpload5');
-/*
-fl.onchange = function(e) {
-    var ext = this.value.match(/\.(.+)$/)[1];
-    switch (ext) {
-        case 'pdf':
-            console.log('pdf file type allowed');
-            break;
-        case 'xls':
-            console.log('xls file type allowed');
-            break;
-        case 'xlsx':
-            console.log('xlsx file type allowed');
-            break;
-        case 'pptx':
-            console.log('pptx file type allowed');
-            break;
-        case 'ppt':
-            console.log('ppt file type allowed');
-            break;
-        case 'pptm':
-            console.log('pptm file type allowed');
-            break;
-        default:
-            alert('Pdf , ppt or xls/xlsx files may be uploaded');
-            this.value = '';
-    }
-};
-*/
+ 
 
 $("#uploadFilenameEdit5").on('change keyup paste mouseup', function() {
     $("#myFileName").html($("#uploadFilenameEdit5").val());
@@ -1784,33 +1780,66 @@ $(document).ready(function () {
         autoOpen: false,
         width:900,
         buttons : {
-            "Confirm" : function() {
-                var c = $('.container').find("[data-alpaca-container-item-name='bodyImage']").children();
-                var d= c[1];
-               
-               var x = d.children[1];
-               var id= x.id;
-               var nxt=id.substr(id.length-2,2);
-               var ext_img = "alpaca" + (parseInt(nxt)+2);
-               
-                          
-               $("[data-alpaca-container-item-name='bodyImage']").val('text');
-               cookieGroup =[];
-
-                  var doc_cookie = document.cookie.split(";");
-                  
+            "Confirm" : function() { 
+                    //get images from  cookie
+                  var doc_cookie = document.cookie.split(";");                  
                   for(var i = 0; i < doc_cookie.length ; i++){
-
                     var name= doc_cookie[i].split("=")[0].trim();
                     if(name=='image_data')
                          var language_1= doc_cookie[i].split("=")[1];
                     if(name=='selected_image')
-                         var location_1= doc_cookie[i].split("=")[1];
-                      
-                       
+                         var selected_bodyImage= doc_cookie[i].split("=")[1];
+                    if(name=='selected_portfolio_image')
+                         var portfolio_img= doc_cookie[i].split("=")[1];
                   }
 
-                    $("#"+ x.id).val(location_1);  
+                //get bodyImage alpaca id to place new image url
+                var c = $('.container').find("[data-alpaca-container-item-name='bodyImage']").children();
+                var d= c[1];               
+                var x = d.children[1];
+                var id= x.id;
+                var nxt=id.substr(id.length-2,2);
+                var ext_img = "alpaca" + (parseInt(nxt)+2);
+                $("#"+ x.id).val(selected_bodyImage);  
+
+                console.log(this)
+                 //get portfolioImage alpaca id to place new image url
+                var pImage = $('.container').find("[data-alpaca-container-item-name *='portfolioItems']").children();
+                var dImage= pImage[1];     
+                console.log(dImage)
+                var xImage      = dImage.children[1];
+                var idImage= xImage.id;
+                var nxtImage=id.substr(idImage.length-2,2);
+                //var ext_img = "alpaca" + (parseInt(nxtImage)+2);
+                $("#"+ xImage.id).val(selected_bodyImage);  
+
+                
+                $(this).dialog("close");
+             
+            },
+            "Cancel" : function() {
+              $(this).dialog("close");
+            } 
+        }
+    });
+     $('#dialog-portfolio').dialog({
+        modal: true,
+        autoOpen: false,
+        width:900,
+        buttons : {
+            "Copy" : function() { 
+                //get images from  cookie
+                var doc_cookie = document.cookie.split(";");                  
+                for(var i = 0; i < doc_cookie.length ; i++){
+                    var name= doc_cookie[i].split("=")[0].trim();                   
+                    if(name=='selected_portfolio_image')
+                        var portfolio_img= doc_cookie[i].split("=")[1];
+                }
+                console.log(portfolio_img);
+                copyReturn =  copyToClipboard(portfolio_img);
+                if(copyReturn){
+                    alert("Click Ctrl+V to see clipboard contents");
+                }           
                 $(this).dialog("close");
              
             },
