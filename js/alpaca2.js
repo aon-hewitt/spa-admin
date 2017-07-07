@@ -1341,7 +1341,8 @@ function getAttachments(type){
 
                                 x= response['rows'][i];                               
                                 if(type=='image'){
-                                    if(x['filename'].substr(x['filename'].indexOf('.')+1) == 'jpg' || x['filename'].substr(x['filename'].indexOf('.')+1) == 'png') {
+                                    var extn = x['filename'].substr(x['filename'].indexOf('.')+1);
+                                    if( extn.toUpperCase() == 'JPG' || extn.toUpperCase() == 'PNG' || extn.toUpperCase() == 'GIF' || extn.toUpperCase() == 'JPEG') {
                                          
                                         data_arr ['pic'] = count;
                                         data_arr ['ar'] = ct + '/' + x['attachmentId']
@@ -1349,17 +1350,8 @@ function getAttachments(type){
                                         newData.push(data_arr); 
                                         count++; 
                                     }    
-                                }/*else if(type=='doc'){
-                                    var extn = x['filename'].substr(x['filename'].indexOf('.')+1);
-                                     if((extn !== 'jpg')) {
-                                        data_arr ['pic'] = count;
-                                        data_arr ['ar'] = ct + '/' + x['attachmentId']
-                                        data_arr ['cpy'] = ct + '/' + x['filename'] 
-                                        newData.push(data_arr); 
-                                        count++; 
-                                    }
-                                }*/
-                            }                             
+                                }
+                            }                      
                             if(count > 0){                              
                                   $("#imgtbl").alpaca({
                                         "data": JSON.stringify(newData),
@@ -1474,7 +1466,7 @@ function getAttachments(type){
                                             });
                                         }
                                     });
-                                }
+                            }
                              },
                              error: function(jqXHR, textStatus, errorThrown) { 
                               console.log(jqXHR + "---" + textStatus + '//' + errorThrown);
